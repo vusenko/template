@@ -1,4 +1,4 @@
-package com.basic.template;
+package com.template.launcher;
 
 public class Launcher {
 
