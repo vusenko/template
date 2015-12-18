@@ -1,38 +1,52 @@
 package com.template.persistance.connector.database;
 
+import java.util.Properties;
+
 import com.google.inject.Singleton;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 import com.template.persistance.connector.BaseConnector;
+import com.template.persistance.connector.PersistenceType;
+import com.template.util.PropertiesRetriever;
 
 /**
  * @author vusenko on 12/18/15.
  */
 
 @Singleton
-public class JdbcConnector<T> implements BaseConnector<T> {
+public class JdbcConnector implements BaseConnector {
 
+    private static final String DRIVER = "driver";
+    private static final String URL = "url";
 
+    private Connection connection;
 
-    public int createData(T t) {
-        return 0;
+    public void getConnection(){
+        if(connection != null){
+            return;
+        }
+
+        Properties properties = PropertiesRetriever.getProperties(PersistenceType.MYSQL);
+        try {
+            Class.forName(properties.getProperty(DRIVER));
+            connection = DriverManager.getConnection(properties.getProperty(URL));
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    public T readData(Class <T> aClass, int id) {
-        return null;
-    }
-
-    public int updateData(Object o) {
-        return 0;
-    }
-
-    public int deleteData(Class <T> aClass, int id) {
-        return 0;
-    }
-
-
-    private Connection getConnection(){
-        return null;
+    public void closeConnection(){
+        if(connection != null){
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
